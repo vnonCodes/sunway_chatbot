@@ -1,9 +1,7 @@
 # Third-party imports
 from openai import OpenAI
-
-client = OpenAI(api_key=config("OPENAI_API_KEY"))
-from fastapi import FastAPI, Form, Depends
 from decouple import config
+from fastapi import FastAPI, Form, Depends
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -14,6 +12,7 @@ from utils import send_message, logger
 
 app = FastAPI()
 # Set up the OpenAI API client
+client = OpenAI(api_key=config("OPENAI_API_KEY"))
 whatsapp_number = config("TO_NUMBER")
 
 # Dependency
@@ -27,9 +26,9 @@ def get_db():
 @app.post("/message")
 async def reply(Body: str = Form(), db: Session = Depends(get_db)):
     # Call the OpenAI API to generate text with GPT-3.5
-    response = client.completions.create(engine="text-davinci-002",
+    response = client.completions.create(model="davinci-002",
     prompt=Body,
-    max_tokens=200,
+    max_tokens=40000,
     n=1,
     stop=None,
     temperature=0.5)
